@@ -1,7 +1,10 @@
 const app = require("express")();
 require('dotenv').config();
 const PORT = process.env.PORT;
+const db = require('./database/db');
 
+
+db.connect();
 
 app.listen(PORT, (err) => {
     if (!err) console.log(`App Started on port: ${PORT}`);
