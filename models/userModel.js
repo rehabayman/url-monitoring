@@ -19,7 +19,12 @@ const userSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false,
-    }
+    },
+
+    checks: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Check"
+    }]
 
 }, {
     timestamps: true,

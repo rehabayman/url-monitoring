@@ -1,5 +1,5 @@
-const { validateUser } = require('../validations/user');
-const { User } = require('../models/user');
+const { validateUser } = require('../validations/userValidator');
+const { User } = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
