@@ -3,50 +3,49 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-    },
+  name: {
+    type: String,
+  },
 
-    email: {
-        type: String,
-        unique: true,
-    },
+  email: {
+    type: String,
+    unique: true,
+  },
 
-    password: {
-        type: String,
-    },
+  password: {
+    type: String,
+  },
 
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
 
-    checks: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Check"
-    }]
+  checks: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Check',
+  }],
 
 }, {
-    timestamps: true,
+  timestamps: true,
 });
 
-userSchema.pre('save', function (next) {
-    let user = this;
+userSchema.pre('save', function(next) {
+  const user = this;
 
-    if (user.isNew || user.isModified('password')) {
-        bcrypt.hash(user.password, saltRounds, function (err, hash) {
-            if (err) {
-                console.log(err);
-                return next("Cannot Add/Update User");
-            } else {
-                user.password = hash;
-                next();
-            }
-        });
-    }
-    else {
+  if (user.isNew || user.isModified('password')) {
+    bcrypt.hash(user.password, saltRounds, function(err, hash) {
+      if (err) {
+        console.log(err);
+        return next('Cannot Add/Update User');
+      } else {
+        user.password = hash;
         next();
-    }
+      }
+    });
+  } else {
+    next();
+  }
 });
 
 const User = mongoose.model('User', userSchema);

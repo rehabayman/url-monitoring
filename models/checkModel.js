@@ -1,93 +1,93 @@
 const mongoose = require('mongoose');
 
 const checkSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    },
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 
-    url: {
-        type: String,
-        required: true,
-    },
+  url: {
+    type: String,
+    required: true,
+  },
 
-    protocol: {
-        type: String,
-        required: true,
-    },
+  protocol: {
+    type: String,
+    required: true,
+  },
 
-    path: {
-        type: String,
-    },
+  path: {
+    type: String,
+  },
 
-    port: {
-        type: Number,
-    },
+  port: {
+    type: Number,
+  },
 
-    webhook: {
-        type: String
-    },
+  webhook: {
+    type: String,
+  },
 
-    timeout: {
-        type: Number,
-        default: 5,
-    },
+  timeout: {
+    type: Number,
+    default: 5,
+  },
 
-    interval: {
-        type: Number,
-        default: 10
-    },
+  interval: {
+    type: Number,
+    default: 10,
+  },
 
-    threshold: {
-        type: Number,
-        default: 1,
-    },
+  threshold: {
+    type: Number,
+    default: 1,
+  },
 
-    authentication: {
-        username: {
-            type: String
-        },
-        password: {
-            type: String
-        }
+  authentication: {
+    username: {
+      type: String,
     },
-
-    assert: {
-        statusCode: {
-            type: Number
-        }
+    password: {
+      type: String,
     },
+  },
 
-    ignoreSSL: {
-        type: Boolean,
-        default: true,
+  assert: {
+    statusCode: {
+      type: Number,
     },
+  },
 
-    config: {
-        intervalUnits: {
-            type: String,
-            default: "minutes"
-        }
+  ignoreSSL: {
+    type: Boolean,
+    default: true,
+  },
+
+  config: {
+    intervalUnits: {
+      type: String,
+      default: 'minutes',
     },
+  },
 
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+
+  status: {
+    type: String,
+  },
+
+  tags: [
+    {
+      type: String,
     },
-
-    status: {
-        type: String
-    },
-
-    tags: [
-        {
-            type: String
-        }
-    ],
+  ],
 
 }, {
-    timestamps: true,
+  timestamps: true,
 });
 
 const Check = mongoose.model('Check', checkSchema);

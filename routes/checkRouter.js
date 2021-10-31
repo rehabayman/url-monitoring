@@ -1,42 +1,42 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { 
-    createCheck, 
-    getCheck, 
-    getChecksByTag, 
-    deleteCheck, 
-    updateCheck
-} = require("../controllers/checkController");
-const { verifyToken } = require('../middlewares/auth');
+const {
+  createCheck,
+  getCheck,
+  getChecksByTag,
+  deleteCheck,
+  updateCheck,
+} = require('../controllers/checkController');
+const {verifyToken} = require('../middlewares/auth');
 
 router.post(
-    "/",
+    '/',
     verifyToken,
-    createCheck
+    createCheck,
 );
 
 router.get(
-    "/:name",
+    '/:name',
     verifyToken,
-    getCheck
+    getCheck,
 );
 
 router.get(
-    "/bulk/:tag",
+    '/bulk/:tag',
     verifyToken,
-    getChecksByTag
+    getChecksByTag,
 );
 
 router.put(
-    "/:id",
+    '/:id',
     verifyToken,
-    updateCheck
+    updateCheck,
 );
 
 router.delete(
-    "/:id",
+    '/:id',
     verifyToken,
-    deleteCheck
+    deleteCheck,
 );
 
 exports.checkRouter = router;
