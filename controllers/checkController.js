@@ -1,5 +1,7 @@
 const { validateCheck } = require('../validations/checkValidator');
 const { Check } = require('../models/checkModel');
+const { User } = require('../models/userModel');
+const { monitorCheck } = require('../services/monitorService');
 
 
 exports.createCheck = async (req, res) => {
@@ -28,11 +30,15 @@ exports.createCheck = async (req, res) => {
 
 exports.getCheck = async (req, res) => {
 
-    const check = await Check.findOne({ name: req.params.name });
+    const check = await Check.find({ name: req.params.name });
 
     if (!check) return res.status(404).send({ message: "Check Not Found" });
 
-    return res.status(200).send(check);
+    const user = await User.findOne({ _id: req.user.id });
+
+    monitorCheck(check, user);
+    
+    return res.status(200).send({message: `Started monitoring check`});
 }
 
 exports.getChecksByTag = async (req, res) => {
@@ -41,7 +47,9 @@ exports.getChecksByTag = async (req, res) => {
 
     if (!checks) return res.status(404).send({ message: "Invalid Tag" });
 
-    return res.status(200).send(checks);
+    monitorCheck(check, user);
+    
+    return res.status(200).send({message: `Started monitoring checks`});
 }
 
 

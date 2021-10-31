@@ -60,7 +60,15 @@ const checkSchema = new mongoose.Schema({
     },
 
     ignoreSSL: {
-        type: Boolean
+        type: Boolean,
+        default: true,
+    },
+
+    config: {
+        intervalUnits: {
+            type: String,
+            default: "minutes"
+        }
     },
 
     userId: {
