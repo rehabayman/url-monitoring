@@ -55,8 +55,6 @@ exports.monitorCheck = (checks, user) => {
 
     try {
       urlMonitor.on('up', async (res, state) => {
-        console.log('up', res);
-        console.log(res.website, res.statusCode, res.statusMessage);
         if (check.status != 'up') {
           check.status = 'up';
           await check.save();
@@ -68,8 +66,6 @@ exports.monitorCheck = (checks, user) => {
       });
 
       urlMonitor.on('down', async (res, state) => {
-        console.log('down');
-        console.log(res.website, res.statusCode, res.statusMessage);
         if (check.status != 'down') {
           check.status = 'down';
           await check.save();
@@ -81,9 +77,6 @@ exports.monitorCheck = (checks, user) => {
       });
 
       urlMonitor.on('stop', async (res, state) => {
-        console.log('stop');
-        console.log(res.website, res.statusCode, res.statusMessage);
-
         if (check.status != 'stop') {
           check.status = 'stop';
           await check.save();
@@ -95,9 +88,6 @@ exports.monitorCheck = (checks, user) => {
       });
 
       urlMonitor.on('error', async (res, state) => {
-        console.log('error');
-        console.log(res.website, res.statusCode, res.statusMessage);
-
         if (check.status != 'error') {
           check.status = 'error';
           await check.save();
