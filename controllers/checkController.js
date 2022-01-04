@@ -1,6 +1,6 @@
 const {validateCheck} = require('../validations/checkValidator');
-const {Check} = require('../models/checkModel');
-const {User} = require('../models/userModel');
+const {Check} = require('../models/check');
+const {User} = require('../models/user');
 const {monitorCheck} = require('../services/monitorService');
 
 

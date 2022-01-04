@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const saltRounds = 10;
+const {hashPassword} = require('./hooks');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -30,23 +29,7 @@ const userSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-userSchema.pre('save', function(next) {
-  const user = this;
-
-  if (user.isNew || user.isModified('password')) {
-    bcrypt.hash(user.password, saltRounds, function(err, hash) {
-      if (err) {
-        console.log(err);
-        return next('Cannot Add/Update User');
-      } else {
-        user.password = hash;
-        next();
-      }
-    });
-  } else {
-    next();
-  }
-});
+userSchema.pre('save', hashPassword);
 
 const User = mongoose.model('User', userSchema);
 
