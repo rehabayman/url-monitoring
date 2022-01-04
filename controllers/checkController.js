@@ -1,7 +1,13 @@
 const {validateCheck} = require('../validations/checkValidator');
-const {Check} = require('../models/check');
-const {User} = require('../models/user');
 const {monitorCheck} = require('../services/monitorService');
+const {
+  createCheck,
+  getCheckByName,
+  getChecksByTag,
+  getCheckById,
+  deleteCheck,
+} = require('../services/checkService');
+const {getUserById} = require('../services/userService');
 
 
 exports.createCheck = async (req, res) => {
@@ -9,18 +15,15 @@ exports.createCheck = async (req, res) => {
 
   const {error} = validateCheck(req.body);
 
-  if (error) res.status(400).send({message: error.details[0].message});
-
-  let check = new Check(req.body);
+  if (error) return res.status(400).send({message: error.details[0].message});
 
   try {
-    check = await check.save();
+    const check = await createCheck(req.body);
 
     res.status(200).send({
       check,
     });
   } catch (err) {
-    console.log(err);
     res.status(400).send({
       message: 'There\'s a check with this name already registered',
     });
@@ -28,31 +31,39 @@ exports.createCheck = async (req, res) => {
 };
 
 exports.getCheck = async (req, res) => {
-  const check = await Check.find({name: req.params.name});
+  try {
+    const check = await getCheckByName(req.params.name);
 
-  if (!check) return res.status(404).send({message: 'Check Not Found'});
+    if (!check) return res.status(404).send({message: 'Check Not Found'});
 
-  const user = await User.findOne({_id: req.user.id});
+    const user = await getUserById(req.user.id);
 
-  monitorCheck(check, user);
+    monitorCheck(check, user);
 
-  return res.status(200).send({message: `Started monitoring check`});
+    return res.status(200).send({message: `Started monitoring check`});
+  } catch (err) {
+    return res.status(500).send({message: 'something went wrong'});
+  }
 };
 
 exports.getChecksByTag = async (req, res) => {
-  const checks = await Check.find({'tags': req.params.tag});
+  try {
+    const checks = await getChecksByTag(req.params.tag);
 
-  if (!checks) return res.status(404).send({message: 'Invalid Tag'});
+    if (!checks) return res.status(404).send({message: 'Invalid Tag'});
 
-  monitorCheck(check, user);
+    monitorCheck(check, user);
 
-  return res.status(200).send({message: `Started monitoring checks`});
+    return res.status(200).send({message: `Started monitoring checks`});
+  } catch (error) {
+    return res.status(500).send({message: 'something went wrong'});
+  }
 };
 
 
 exports.updateCheck = async (req, res) => {
   try {
-    const check = await Check.findOne({_id: req.params.id});
+    const check = await getCheckById(req.params.id);
 
     if (!check) return res.status(404).send({message: 'Check Not Found'});
 
@@ -60,9 +71,8 @@ exports.updateCheck = async (req, res) => {
       return res.status(403).send({message: 'Unauthorized'});
     }
 
-
     if (req.body.name) {
-      const dupCheck = await Check.find({name: req.body.name});
+      const dupCheck = await getCheckByName(req.body.name);
 
       if (dupCheck.length) {
         return res.status(400).send({message: 'Duplicate Name'});
@@ -87,13 +97,13 @@ exports.updateCheck = async (req, res) => {
 
 exports.deleteCheck = async (req, res) => {
   try {
-    let check = await Check.findOne({_id: req.params.id});
+    let check = await getCheckById(req.params.id);
 
     if (req.user.id != check.userId) {
       return res.status(403).send({message: 'Unauthorized'});
     }
 
-    check = await Check.findOneAndRemove({_id: req.params.id});
+    check = await deleteCheck(req.params.id);
 
     if (!check) return res.status(404).send({message: 'Check Not Found'});
 
