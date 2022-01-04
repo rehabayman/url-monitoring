@@ -13,6 +13,11 @@ exports.getUserByEmail = async (email) => {
   return user;
 };
 
+exports.getUserById = async (id) => {
+  const user = await User.findOne({_id: id});
+  return user;
+};
+
 exports.updateUser = async (selectorAttributes, updatableAttributes) => {
   return await User.updateOne(selectorAttributes, updatableAttributes);
 };
