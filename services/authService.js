@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const JWT_SECRET = process.env.JWT_SECRET;
+const EMAIL_SECRET = process.env.EMAIL_SECRET;
 
 exports.generateToken = (userId) => {
   // assign the three parts ot the token
@@ -8,4 +10,13 @@ exports.generateToken = (userId) => {
   });
 
   return token;
+};
+
+exports.compareUserPassword = (loginPassword, userPassword) => {
+  return bcrypt.compareSync(loginPassword, userPassword);
+};
+
+exports.verifyJwtToken = (token) => {
+  const {id} = jwt.verify(token, EMAIL_SECRET);
+  return id;
 };

@@ -26,7 +26,7 @@ exports.sendEmail = async (userId, userEmail) => {
     to: userEmail,
     subject: 'Mail Activation',
     text: `Pleased to have you in our application.\n
-        Please Activate your mail from this 
-        link: ${ACTIVATION_LINK}${emailToken}`,
+            Please Activate your mail from this 
+            link: ${ACTIVATION_LINK}${emailToken}`,
   });
 };

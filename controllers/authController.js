@@ -1,29 +1,35 @@
 const {validateUser} = require('../validations/userValidator');
-const {User} = require('../models/user');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const {generateToken} = require('../services/authService');
+const {
+  generateToken, compareUserPassword,
+  verifyJwtToken,
+} = require('../services/authService');
 const {sendEmail} = require('../services/emailService');
+const {
+  createUser, getUserByEmail,
+  updateUser,
+} = require('../services/userService');
 
 exports.signup = async (req, res) => {
   const {error} = validateUser(req.body);
 
-  if (error) res.status(400).send({message: error.details[0].message});
+  if (error) return res.status(400).send({message: error.details[0].message});
 
-  const user = await User.findOne({email: req.body.email});
-
-  if (user) {
-    res.status(400).send({message: 'user already registered'});
-  }
-
-  let newUser = new User({
-    name: req.body.name, email: req.body.email, password: req.body.password,
-  });
+  const {email, name, password} = req.body;
 
   try {
-    newUser = await newUser.save();
+    const user = await getUserByEmail(email);
 
-    sendEmail(newUser._id, newUser.email);
+    if (user) {
+      return res.status(400).send({message: 'user already registered'});
+    }
+  } catch (error) {
+    return res.status(500).send({message: 'something went wrong'});
+  }
+
+  try {
+    newUser = await createUser(name, email, password);
+
+    await sendEmail(newUser._id, newUser.email);
 
     const token = generateToken(newUser.id);
 
@@ -36,17 +42,16 @@ exports.signup = async (req, res) => {
       message: 'Registered Successfully',
     });
   } catch (err) {
-    console.log(err);
     res.status(400).send({message: err});
   }
 };
 
 exports.verifyEmail = async (req, res) => {
   try {
-    const {id} = jwt.verify(req.query.token, process.env.EMAIL_SECRET, {
-      expiresIn: 86400, // 1 day in seconds [24 hours]
-    });
-    await User.updateOne({_id: id}, {isVerified: true});
+    const id = verifyJwtToken(req.query.token);
+
+    await updateUser({_id: id}, {isVerified: true});
+
     res.status(200).send({
       message: 'Mail Verified Successfully. You can Login Now.',
     });
@@ -59,7 +64,7 @@ exports.signin = async (req, res) => {
   const {email, password} = req.body;
 
   try {
-    const user = await User.findOne({email});
+    const user = await getUserByEmail(email);
 
     if (!user) {
       return res.status(400).send({
@@ -74,7 +79,7 @@ exports.signin = async (req, res) => {
     }
 
     // check password matching
-    const passwordIsValid = bcrypt.compareSync(password, user.password);
+    const passwordIsValid = compareUserPassword(password, user.password);
 
     if (!passwordIsValid) {
       return res.status(400).send({
