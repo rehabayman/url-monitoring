@@ -2,8 +2,8 @@ const {validateUser} = require('../validations/userValidator');
 const {User} = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const JWT_SECRET = process.env.JWT_SECRET;
+const {generateToken} = require('../services/authService');
+const {sendEmail} = require('../services/emailService');
 
 exports.signup = async (req, res) => {
   const {error} = validateUser(req.body);
@@ -23,28 +23,7 @@ exports.signup = async (req, res) => {
   try {
     newUser = await newUser.save();
 
-    const emailToken = jwt.sign({id: newUser._id}, process.env.EMAIL_SECRET, {
-      expiresIn: 86400, // 1 day in seconds [24 hours]
-    });
-
-    // create reusable transporter object using the default SMTP transport
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: process.env.EMAIL_USER, // user
-        pass: process.env.EMAIL_PASS, // password
-      },
-    });
-
-    // send mail with defined transport object
-    await transporter.sendMail({
-      from: `URL Monitoring App <${process.env.EMAIL_USER_DISPLAY}>`,
-      to: newUser.email,
-      subject: 'Mail Activation',
-      text: `Pleased to have you in our application.\n
-      Please Activate your mail from this 
-      link: ${process.env.ACTIVATION_LINK}${emailToken}`,
-    });
+    sendEmail(newUser._id, newUser.email);
 
     const token = generateToken(newUser.id);
 
@@ -114,13 +93,4 @@ exports.signin = async (req, res) => {
       message: 'Server Error',
     });
   }
-};
-
-const generateToken = (userId) => {
-  // assign the three parts ot the token
-  const token = jwt.sign({id: userId}, JWT_SECRET, {
-    expiresIn: 172800, // 8 hours
-  });
-
-  return token;
 };
