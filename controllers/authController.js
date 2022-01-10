@@ -27,7 +27,7 @@ exports.signup = async (req, res) => {
   }
 
   try {
-    newUser = await createUser(name, email, password);
+    const newUser = await createUser(name, email, password);
 
     await sendEmail(newUser._id, newUser.email);
 
