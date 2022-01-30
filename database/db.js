@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
-const database = process.env.DATABASE;
+const databaseDev = process.env.DATABASE;
+const databaseTest = process.env.DATABASE_TEST;
 const databaseHost = process.env.DB_HOST;
 const databasePort = process.env.DB_PORT;
 
-const connect = () => {
+const connect = (isTest = false) => {
+  const database = isTest ? databaseTest : databaseDev;
   mongoose.connect(
       `mongodb://${databaseHost}:${databasePort}/${database}`,
       {
@@ -12,7 +14,7 @@ const connect = () => {
       },
       (err) => {
         if (!err) {
-          console.log(`connected to MongoDB on port: ${databasePort}`);
+          console.log(`connected to MongoDB on db: ${database}`);
         } else {
           console.log(err);
         }
@@ -20,4 +22,14 @@ const connect = () => {
   );
 };
 
-module.exports = {connect};
+const disconnect = async () => {
+  const collections = await mongoose.connection.db.collections();
+
+  for (const collection of collections) {
+    await collection.drop();
+  }
+
+  await mongoose.connection.close();
+};
+
+module.exports = {connect, disconnect};

@@ -4,7 +4,7 @@
   "description": "Node App for monitoring the uptime of websites",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "env APP_ENV='test' jest",
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
@@ -31,8 +31,11 @@
     "ping-monitor": "^0.6.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.0.0-alpha.5",
     "eslint": "^8.1.0",
     "eslint-config-google": "^0.14.0",
-    "nodemon": "^2.0.14"
+    "jest": "^27.4.7",
+    "nodemon": "^2.0.14",
+    "supertest": "^6.2.2"
   }
 }
