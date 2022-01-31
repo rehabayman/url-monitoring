@@ -11,8 +11,8 @@ describe('Authentication Endpoints Tests', function() {
     app.close();
   });
 
-  describe('SignUp Tests', function() {
-    test('POST /auth/signup', async () => {
+  describe('POST /auth/signup', function() {
+    test('User should sign up successfully', async () => {
       const name = faker.name.findName();
       const email = faker.internet.email();
       const password = faker.internet.password();
