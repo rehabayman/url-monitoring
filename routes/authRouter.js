@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const {signup, signin, verifyEmail} = require('../controllers/authController');
+const {
+  signup, signin,
+  verifyEmail, resendVerificationLink,
+} = require('../controllers/authController');
 
 router.post(
     '/signup',
@@ -15,6 +18,11 @@ router.post(
 router.get(
     '/verify/email',
     verifyEmail,
+);
+
+router.get(
+    '/verify/email/resend',
+    resendVerificationLink,
 );
 
 exports.authRouter = router;

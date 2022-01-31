@@ -11,6 +11,8 @@ exports.sendEmail = async (userId, userEmail) => {
     expiresIn: 86400, // 1 day in seconds [24 hours]
   });
 
+  const verificationLink = `${ACTIVATION_LINK}${emailToken}&id=${userId}`;
+
   // create reusable transporter object using the default SMTP transport
   const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -27,6 +29,8 @@ exports.sendEmail = async (userId, userEmail) => {
     subject: 'Mail Activation',
     text: `Pleased to have you in our application.\n
             Please Activate your mail from this 
-            link: ${ACTIVATION_LINK}${emailToken}`,
+            link: ${verificationLink}`,
   });
+
+  return verificationLink;
 };

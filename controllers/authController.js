@@ -8,6 +8,11 @@ const {
   createUser, getUserByEmail,
   updateUser,
 } = require('../services/userService');
+const {
+  validateResendVerificationLink,
+  validateSignIn,
+  validateVerifyEmail,
+} = require('../validations/authValidator');
 
 exports.signup = async (req, res) => {
   const {error} = validateUser(req.body);
@@ -29,7 +34,9 @@ exports.signup = async (req, res) => {
   try {
     const newUser = await createUser(name, email, password);
 
-    await sendEmail(newUser._id, newUser.email);
+    const verificationLink = await sendEmail(newUser._id, newUser.email);
+
+    await updateUser({_id: newUser.id}, {verificationLink});
 
     const token = generateToken(newUser.id);
 
@@ -39,7 +46,7 @@ exports.signup = async (req, res) => {
 
     res.status(201).send({
       data,
-      message: 'Registered Successfully',
+      message: 'registered successfully',
     });
   } catch (err) {
     res.status(400).send({message: err});
@@ -47,20 +54,38 @@ exports.signup = async (req, res) => {
 };
 
 exports.verifyEmail = async (req, res) => {
+  const {error} = validateVerifyEmail(req.query);
+
+  if (error) return res.status(400).send({message: error.details[0].message});
+
   try {
     const id = verifyJwtToken(req.query.token);
 
-    await updateUser({_id: id}, {isVerified: true});
+    if (id === req.query.id) {
+      await updateUser({_id: id}, {isVerified: true});
 
-    res.status(200).send({
-      message: 'Mail Verified Successfully. You can Login Now.',
-    });
+      return res.status(200).send({
+        message: 'Mail Verified Successfully. You can Login Now.',
+      });
+    } else {
+      return res.status(400).send({
+        message: 'Unrecognized verification link.',
+      });
+    }
   } catch (err) {
-    res.status(400).send({message: err});
+    let message = err.message;
+    if (err.name === 'TokenExpiredError') {
+      message = 'Link expired. Please request a new one';
+    }
+    return res.status(400).send({message});
   }
 };
 
 exports.signin = async (req, res) => {
+  const {error} = validateSignIn(req.body);
+
+  if (error) return res.status(400).send({message: error.details[0].message});
+
   const {email, password} = req.body;
 
   try {
@@ -69,12 +94,6 @@ exports.signin = async (req, res) => {
     if (!user) {
       return res.status(400).send({
         message: 'Invalid Email or Password',
-      });
-    }
-
-    if (!user.isVerified) {
-      return res.status(400).send({
-        message: 'Email is not verified',
       });
     }
 
@@ -97,5 +116,28 @@ exports.signin = async (req, res) => {
     res.status(500).send({
       message: 'Server Error',
     });
+  }
+};
+
+
+exports.resendVerificationLink = async (req, res) => {
+  const {error} = validateResendVerificationLink(req.body);
+
+  if (error) return res.status(400).send({message: error.details[0].message});
+
+  const {email} = req.body;
+
+  try {
+    const user = await getUserByEmail(email);
+
+    if (user) {
+      const verificationLink = await sendEmail(user._id, user.email);
+
+      await updateUser({_id: user.id}, {verificationLink});
+    } else {
+      return res.status(404).send({message: 'user not found'});
+    }
+  } catch (error) {
+    return res.status(500).send({message: 'something went wrong'});
   }
 };

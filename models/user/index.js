@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
 
+  verificationLink: {
+    type: String,
+  },
+
   checks: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Check',

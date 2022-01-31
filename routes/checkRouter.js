@@ -7,35 +7,35 @@ const {
   deleteCheck,
   updateCheck,
 } = require('../controllers/checkController');
-const {verifyToken} = require('../middlewares/auth');
+const {verifyToken, userVerified} = require('../middlewares/auth');
 
 router.post(
     '/',
-    verifyToken,
+    [verifyToken, userVerified],
     createCheck,
 );
 
 router.get(
     '/:name',
-    verifyToken,
+    [verifyToken, userVerified],
     getCheck,
 );
 
 router.get(
     '/bulk/:tag',
-    verifyToken,
+    [verifyToken, userVerified],
     getChecksByTag,
 );
 
 router.put(
     '/:id',
-    verifyToken,
+    [verifyToken, userVerified],
     updateCheck,
 );
 
 router.delete(
     '/:id',
-    verifyToken,
+    [verifyToken, userVerified],
     deleteCheck,
 );
 
