@@ -6,11 +6,18 @@ const db = require('./database/db');
 const APP_ENV = process.env.APP_ENV;
 const {authRouter} = require('./routes/authRouter');
 const {checkRouter} = require('./routes/checkRouter');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
 
 const isTest = APP_ENV === 'dev' ? false : true;
 db.connect(isTest);
 app.use(express.json());
 
+const options = require('./swagger');
+
+const specs = swaggerJsDoc(options);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/auth', authRouter);
 app.use('/check', checkRouter);
 

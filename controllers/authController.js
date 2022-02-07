@@ -65,17 +65,17 @@ exports.verifyEmail = async (req, res) => {
       await updateUser({_id: id}, {isVerified: true});
 
       return res.status(200).send({
-        message: 'Mail Verified Successfully. You can Login Now.',
+        message: 'mail verified successfully.',
       });
     } else {
       return res.status(400).send({
-        message: 'Unrecognized verification link.',
+        message: 'unrecognized verification link.',
       });
     }
   } catch (err) {
     let message = err.message;
     if (err.name === 'TokenExpiredError') {
-      message = 'Link expired. Please request a new one';
+      message = 'link expired, please request a new one.';
     }
     return res.status(400).send({message});
   }
@@ -93,7 +93,7 @@ exports.signin = async (req, res) => {
 
     if (!user) {
       return res.status(400).send({
-        message: 'Invalid Email or Password',
+        message: 'invalid email or password',
       });
     }
 
@@ -102,7 +102,7 @@ exports.signin = async (req, res) => {
 
     if (!passwordIsValid) {
       return res.status(400).send({
-        message: 'Invalid Email or Password',
+        message: 'invalid email or password',
       });
     }
 
@@ -121,7 +121,7 @@ exports.signin = async (req, res) => {
 
 
 exports.resendVerificationLink = async (req, res) => {
-  const {error} = validateResendVerificationLink(req.body);
+  const {error} = validateResendVerificationLink(req.query);
 
   if (error) return res.status(400).send({message: error.details[0].message});
 
@@ -134,6 +134,10 @@ exports.resendVerificationLink = async (req, res) => {
       const verificationLink = await sendEmail(user._id, user.email);
 
       await updateUser({_id: user.id}, {verificationLink});
+
+      return res.status(200).send({
+        message: 'verification link is sent to your email',
+      });
     } else {
       return res.status(404).send({message: 'user not found'});
     }

@@ -28,7 +28,9 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.12",
     "nodemailer": "^6.7.0",
-    "ping-monitor": "^0.6.2"
+    "ping-monitor": "^0.6.2",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.5",
