@@ -28,17 +28,7 @@ These steps will get you a copy of the project up and running for development an
 5. Receive check monitor results on Email and/or specified webhook
 
 ## URLs
-1. Auth:
-    1. post "{{server_url}}/auth/signup" - user sign up
-    2. post "{{server_url}}/auth/signin" - user sign in
-    3. get "{{server_url}}/verify/email" - email verification link
-
-2. Check:
-    1. post "{{server_url}}/check/" - create a check
-    2. get "{{server_url}}/:name" - get and start monitoring a check by name
-    3. get "{{server_url}}/bulk/:tag" - get and start monitoring a group of checks by tag
-    4. put "{{server_url}}/:id" - update a check
-    5. delete "{{server_url}}/:id" - delete a check
+GET {{server_url}}/api-docs/ - to browse the url documentation
 
 ## Built With
 1. Nodejs
